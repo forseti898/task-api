@@ -2,20 +2,12 @@ const express = require('express');
 const path = require('path');
 
 const router = express.Router();
+const controller = require('../controller/app.controller')
 
-const tarefas = [];
 
-router.post('/tarefas', (req, res,)=>{
-    const {mensagem} = req.body
+router.post('/tarefas', controller.createTask);
 
-    tarefas.push(mensagem);
-    res.status(201).send("Salvo!")
-
-})
-
-router.get('/view', (req, res)=>{
-    res.send(tarefas);
-})
+router.get('/view',controller.showTask)
 
 
 
