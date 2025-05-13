@@ -1,12 +1,14 @@
 const tarefas = [];
 
 const createTask = (req, res) =>{
-    const {mensagem} = req.body
+    const {Id, title, status, content} = req.body
 
-    tarefas.push(mensagem);
+    tarefas.push({Id, title, status, content})
     res.status(201).send("Salvo!")
 
 }
+
+
 
 
 const showTask = (req, res) =>{
