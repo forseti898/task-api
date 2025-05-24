@@ -1,13 +1,11 @@
 const express = require('express');
+const router = require('../router/router');
+
 const app = express();
 
-const router = require('../router/router')
 app.use(express.json());
 
-app.use(router);
+// Prefixar as rotas da API
+app.use('/api', router);
 
-
-
-app.listen(3000, ()=>{
-    console.log(`Server is running in PORT: 3000`);
-})
+module.exports = app;

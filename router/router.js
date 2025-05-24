@@ -1,14 +1,17 @@
 const express = require('express');
-const path = require('path');
-
 const router = express.Router();
-const controller = require('../controller/app.controller')
+const controller = require('../controller/app.controller');
 
-
+// Criar tarefa
 router.post('/tarefas', controller.createTask);
 
-router.get('/view',controller.showTask)
+// Listar todas as tarefas
+router.get('/tarefas', controller.showTask);
 
+// Atualizar tarefa por ID
+router.put('/tarefas/:id', controller.updateTask);
 
+// Deletar tarefa por ID
+router.delete('/tarefas/:id', controller.deleteTask);
 
 module.exports = router;
