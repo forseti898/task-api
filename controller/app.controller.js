@@ -1,4 +1,4 @@
-const tarefas = [];
+const connection = require('../server/db');
 
 // Criar uma nova tarefa
 const createTask = (req, res) => {
@@ -9,43 +9,68 @@ const createTask = (req, res) => {
     }
 
     const Id = Date.now().toString();
-    tarefas.push({ Id, title, status, content });
-    res.status(201).json({ message: 'Tarefa criada com sucesso!', Id });
+    const sql = 'INSERT INTO tarefas (idtarefas, title, content, status) VALUES (?, ?, ?, ?)';
+    const values = [Id, title, content, status];
+
+    connection.query(sql, values, function(err, results){
+        if(err){
+            console.error('Erro ao inserir dados no Banco: ', err);
+            return res.status(500).json({ error: 'Erro ao salvar no banco' });
+        }
+
+        res.status(201).json({ message: 'Tarefa criada com sucesso!'});   
+    })
+   
 };
 
 // Exibir todas as tarefas
 const showTask = (req, res) => {
-    res.json(tarefas);
+    const sql = 'SELECT * FROM tarefas';
+
+    connection.query(sql, function(err, results){
+        if(err){
+            console.log('Erro ao exibir dados do banco de dados: ', err);
+            return res.status(500).json({ erro: 'Erro ao buscar tarefas' });
+        }
+
+        res.status(200).json(results);
+    })
+
+
 };
 
 // Atualizar uma tarefa
 const updateTask = (req, res) => {
     const { id } = req.params;
-    const { title, status, content } = req.body;
+    const { title, status, content, prioridade, dataVenc } = req.body;
 
-    const tarefa = tarefas.find(t => t.Id === id);
-    if (!tarefa) {
-        return res.status(404).json({ error: 'Tarefa não encontrada' });
-    }
+    const sql = 'UPDATE tarefas SET title = ?, content = ?, status = ?, prioridade = ?, dataVenc = ? WHERE idtarefas = ?';
+    const values = [title, content, status, prioridade, dataVenc, id];
+    
+    connection.query(sql, values, function(err){
+        if(err){
+            console.error('Erro ao atualizar dados no Banco: ', err);
+            return res.status(500).json({ error: 'Erro ao atualizar no banco' });
+        }
 
-    if (title) tarefa.title = title;
-    if (status) tarefa.status = status;
-    if (content) tarefa.content = content;
+        res.json({ message: 'Tarefa atualizada com sucesso' });
+    })
 
-    res.json({ message: 'Tarefa atualizada com sucesso' });
+    
 };
 
 // Deletar uma tarefa
 const deleteTask = (req, res) => {
     const { id } = req.params;
-    const index = tarefas.findIndex(t => t.Id === id);
+    const sql = 'DELETE FROM tarefas WHERE idtarefas = ?';
 
-    if (index === -1) {
-        return res.status(404).json({ error: 'Tarefa não encontrada' });
-    }
-
-    tarefas.splice(index, 1);
-    res.json({ message: 'Tarefa deletada com sucesso' });
+    connection.query(sql, [id], function(err){
+        if(err){
+            return res.status(500).json({ error: 'Erro ao deletar no banco' });
+        }
+        res.json({ message: 'Tarefa deletada com sucesso' });
+    });
+    
 };
 
 module.exports = {
