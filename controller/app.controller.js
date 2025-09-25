@@ -1,16 +1,30 @@
 const connection = require('../server/db');
+const knex = require('../knexfile');
 
 // Criar uma nova tarefa
-const createTask = (req, res) => {
-    const { title, status, content } = req.body;
+const createTask = async(req, res) => {
+    const { title,content, prioridade, dataVenc } = req.body;
 
-    if (!title || !status || !content) {
+    if (!title ||!content || !prioridade || !dataVenc) {
         return res.status(400).json({ error: 'Campos obrigatórios: title, status, content' });
     }
 
     const Id = Date.now().toString();
-    const sql = 'INSERT INTO tarefas (idtarefas, title, content, status) VALUES (?, ?, ?, ?)';
-    const values = [Id, title, content, status];
+    try{
+        await knex("tarefas").insert({
+            idtarefas: Id,
+            title: title,
+            content: content,
+            prioridade: prioridade,
+            dataVenc: dataVenc
+        });
+        res.status(201).json({Mensagem: "Registro criado com sucesso!"});
+    }
+    catch(error){
+         res.status(500).json({error});
+    }
+    /*const sql = 'INSERT INTO tarefas (idtarefas, title, content,prioridade, dataVenc) VALUES (?, ?, ?, ?, ? )';
+    const values = [Id, title, content,prioridade, dataVenc];
 
     connection.query(sql, values, function(err, results){
         if(err){
@@ -19,22 +33,25 @@ const createTask = (req, res) => {
         }
 
         res.status(201).json({ message: 'Tarefa criada com sucesso!'});   
-    })
+    })*/
    
 };
 
 // Exibir todas as tarefas
-const showTask = (req, res) => {
-    const sql = 'SELECT * FROM tarefas';
+const showTask = async (req, res) => {
 
-    connection.query(sql, function(err, results){
-        if(err){
-            console.log('Erro ao exibir dados do banco de dados: ', err);
-            return res.status(500).json({ erro: 'Erro ao buscar tarefas' });
-        }
+    try{
+        const tasks = await knex.select('*').from("tarefas");
 
-        res.status(200).json(results);
-    })
+        res.status(200).json({tasks});
+    }catch(err){
+
+        res.status(500).json({Erro: "Erro ao buscar tarefas"});
+    }
+
+
+
+    
 
 
 };
