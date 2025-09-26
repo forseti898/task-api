@@ -23,17 +23,6 @@ const createTask = async(req, res) => {
     catch(error){
          res.status(500).json({error});
     }
-    /*const sql = 'INSERT INTO tarefas (idtarefas, title, content,prioridade, dataVenc) VALUES (?, ?, ?, ?, ? )';
-    const values = [Id, title, content,prioridade, dataVenc];
-
-    connection.query(sql, values, function(err, results){
-        if(err){
-            console.error('Erro ao inserir dados no Banco: ', err);
-            return res.status(500).json({ error: 'Erro ao salvar no banco' });
-        }
-
-        res.status(201).json({ message: 'Tarefa criada com sucesso!'});   
-    })*/
    
 };
 
